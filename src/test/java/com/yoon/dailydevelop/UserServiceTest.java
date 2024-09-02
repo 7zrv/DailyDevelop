@@ -5,14 +5,15 @@ import com.yoon.dailydevelop.domain.user.repository.UserRepository;
 import com.yoon.dailydevelop.domain.user.requestDto.RegisterUserRequestDto;
 import com.yoon.dailydevelop.domain.user.responseDto.UserResponseDto;
 import com.yoon.dailydevelop.domain.user.service.UserService;
+import com.yoon.dailydevelop.global.exception.DuplicateException;
+import com.yoon.dailydevelop.global.exception.ExceptionCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
@@ -37,13 +38,9 @@ class UserServiceTest {
         requestDto.setNickname("nickname");
         requestDto.setPhoneNumber("123-456-7890");
 
-        // Mock the user entity that will be saved
-        User user = User.builder()
-                .email("test@example.com")
-                .password("password1234")
-                .nickname("nickname")
-                .phoneNumber("123-456-7890")
-                .build();
+        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
+
+        User user = requestDto.toEntity();
 
         // Mock the saved user entity to return
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -56,4 +53,26 @@ class UserServiceTest {
         assertEquals("test@example.com", registeredUser.getEmail());
         verify(userRepository, times(1)).save(any(User.class));
     }
+
+
+    @Test
+    void testRegisterUser_DuplicateEmail() {
+        // Given
+        RegisterUserRequestDto requestDto = new RegisterUserRequestDto();
+        requestDto.setEmail("test@example.com");
+
+        // Mock the email duplication check
+        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(true);
+
+        // When & Then
+        DuplicateException exception = assertThrows(DuplicateException.class, () -> userService.registerUser(requestDto));
+        assertEquals(ExceptionCode.DUPLICATED_USER_EMAIL.getCode(), exception.getCode());
+        assertEquals(ExceptionCode.DUPLICATED_USER_EMAIL.getMessage(), exception.getMessage());
+
+        // Verify that save was not called
+        verify(userRepository, times(0)).save(any(User.class));
+    }
+
+
+
 }

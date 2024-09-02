@@ -7,7 +7,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ApiResponse<T> {
+public class ApiResponse<T> implements ResponseBase{
 
 
     private int code;
@@ -23,7 +23,6 @@ public class ApiResponse<T> {
 
         return new ApiResponse<>(200, msg, null);
     }
-
 
     public ApiResponse(int code, String message, T data) {
         this.code = code;

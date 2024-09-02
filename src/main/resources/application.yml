@@ -12,7 +12,7 @@ spring:
         format_sql: true
         highlight_sql: true
         generate_statistics: true
-    hibernate:
-      ddl-auto: update
+        ddl-auto: update
+    show-sql: true
 
-  
+
