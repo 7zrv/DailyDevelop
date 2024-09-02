@@ -31,6 +31,13 @@ class UserServiceTest {
     @Test
     void testRegisterUser() {
         // Given
+        RegisterUserRequestDto requestDto = new RegisterUserRequestDto();
+        requestDto.setEmail("test@example.com");
+        requestDto.setPassword("password1234");
+        requestDto.setNickname("nickname");
+        requestDto.setPhoneNumber("123-456-7890");
+
+        // Mock the user entity that will be saved
         User user = User.builder()
                 .email("test@example.com")
                 .password("password1234")
@@ -38,17 +45,15 @@ class UserServiceTest {
                 .phoneNumber("123-456-7890")
                 .build();
 
-        RegisterUserRequestDto requestDto = new RegisterUserRequestDto();
-
-
+        // Mock the saved user entity to return
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         // When
-        UserResponseDto registeredUser = userService.registerUser(user);
+        UserResponseDto registeredUser = userService.registerUser(requestDto);
 
         // Then
         assertNotNull(registeredUser);
         assertEquals("test@example.com", registeredUser.getEmail());
-        verify(userRepository, times(1)).save(user);
+        verify(userRepository, times(1)).save(any(User.class));
     }
 }
