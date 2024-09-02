@@ -1,4 +1,4 @@
-package com.yoon.dailydevelop.global.common;
+package com.yoon.dailydevelop.global.common.response;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +14,9 @@ public class ApiResponse<T> implements ResponseBase{
     private String message;
     private T data;
 
-    public static <T> ApiResponse<T> ok(T data) {
+    public static <T> ApiResponse<T> ok(T data, String message) {
 
-        return new ApiResponse<>(200, null, data);
+        return new ApiResponse<>(200, message, data);
     }
 
     public static ApiResponse<?> ok(String msg) {

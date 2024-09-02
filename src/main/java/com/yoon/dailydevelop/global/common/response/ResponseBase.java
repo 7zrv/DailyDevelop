@@ -1,4 +1,4 @@
-package com.yoon.dailydevelop.global.common;
+package com.yoon.dailydevelop.global.common.response;
 
 public interface ResponseBase {
 
